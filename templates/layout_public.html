@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <title>Plauschgruppe</title>
+  
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+    	<script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-QEKY5N7MNY'); 
+        </script>
+        <style>
+         .flash-error {
+             color: red;
+             font-weight: bold;
+             padding: 10px;
+             /*border: 2px solid red;*/
+             background: #ffe6e6;
+             /*border-radius: 5px;*/
+             margin-bottom: 10px;
+             font-size: 1.2em;
+         }
+
+         .flash-success {
+             color: green;
+             font-weight: bold;
+             padding: 10px;
+             border: 2px solid green;
+             background: #ffe6e6;
+             border-radius: 5px;
+             margin-bottom: 15px;
+             font-size: 1.2em;
+          }
+
+          html {
+            overflow-y: scroll;
+          }
+
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+          }
+
+          header {
+            background-color: lightblue;
+            text-align: center;
+            padding: 10px 0;
+          }
+
+          .header-container {
+            margin: 0 auto;
+            max-width: 1200px;
+         }
+
+          .topnav {
+            overflow: hidden;
+            background-color: grey;
+            margin: 0;
+            padding: 0;
+            z-index: 1;
+          }
+          
+          .topnav a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 12px 14px;
+            text-decoration: none;
+          }
+          .navbar a:hover {
+            background-color: lightblue;
+            font-size: 18px;
+          }  
+
+          footer {
+            margin-top: 100px;
+            font-size: smaller; 
+            font-family: Arial; 
+            color: lightblue; 
+            text-align: center;
+          }
+
+          Responsive Design 
+          @media (max-width: 768px) {
+            .content {
+            flex-direction: column; 
+            }
+          }  
+          
+        </style>
+    </head>
+    <body>
+      <header class="header_container">
+        <h1 style="color:#08088A; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Plauschgruppe Golfclub Bad Ragaz</h1>
+      </header>
+      
+      <div class="topnav">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('program') }}">Programm 2025</a>
+        <a href="{{ url_for('members_corner') }}">Informationen fuer Mitglieder</a>
+        <a href="{{ url_for('test_1') }}">Testseite</a>
+      </div>
+
+     {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div id="flash-container" style="max-width:200px; margin: left 30px; margin top: 12px "> 
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+     {% endwith %} 
+ 
+     {% block content %}
+
+     {% endblock %}
+      </div>
+      <footer>
+        &copy; 2024 Marcus Lütolf<br>letztes Update: {{ timestamp }}
+      </footer>
+    </body>
+</html>

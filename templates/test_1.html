@@ -1,0 +1,56 @@
+{% extends "layout_public.html" %}
+
+{% block content %}
+
+<style>
+
+    .background-section {
+        /*background-color: #f0f0f0;*/
+        background-image: url('{{ url_for('shared_files', filename="signature.jpg") }}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center top;
+        min-height: 750px;
+        position: relative; /* Allows positioning child elements within this container */
+        margin: 0;
+        padding: 0;
+    }
+
+    .background-section h3 {
+        position: absolute;
+        top: 12%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: skyblue;
+        font-size: 2em;
+        font-family: Verdana, sans-serif;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        text-align: center;
+    }
+      
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.6);
+        color: white;
+        font-size: 24px;
+        padding: 15px 30px;
+        border-radius: 8px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer; /* Add this to show it's clickable */
+     }
+
+
+</style>
+<body>
+    <div class="background-section" style="font-family: Verdana, sans-serif;">
+       <h3>TEST</h3>
+    </div>>
+</body>
+
+{% endblock %}

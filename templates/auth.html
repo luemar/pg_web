@@ -1,0 +1,97 @@
+{% extends "layout_auth.html" %}
+
+{% block content %}
+
+<style>
+.background-section {
+      background-color: #f0f0f0;
+      background-image: url('{{ url_for('static', filename="signature.jpg") }}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      min-height: 750px;
+      position: relative;
+      margin: 0;
+      padding: 20px;
+      }
+
+.auth-content {
+    margin-left: 5%
+}
+
+.form-label-reg {
+    color: #08088A;
+    font-family: Arial;
+}
+
+.form-label-log {
+    color: green;
+    font-family: Arial;
+}
+
+.auth-button-reg {
+    background-color: lightblue;
+    color: black;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.auth-button:hover {
+    background-color: #87cefa; /* lighter blue on hover */
+}
+
+.auth-button-log {
+    background-color: lightgreen;
+    color: black;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.auth-button:hover {
+    background-color: #87cefa; /* lighter blue on hover */
+}
+
+ 
+</style>
+
+
+<div class="background-section">
+   <div class="auth-content">
+      <div class="form-label-reg">
+         <h2>hier, beim ersten Besuch dieser Webseite einmal registrieren</h2>
+      </div>
+
+      <div>
+         <form method="POST" action="{{ url_for('register') }}">
+             <label>email Adresse:</label><br>
+             <input name="email" type="email" required><br><br>
+
+             <label>erstelle einen Benutzername</label><br>
+             <input name="username" required><br><br>
+
+             <button type="submit" class="auth-button-reg">weiter</button>
+         </form>
+      </div>
+
+      <hr>
+
+      <div class="form-label-log">
+         <h2 style="color: green">hier einloggen</h2>
+      </div>
+      
+      <div>
+         <form method="POST" action="{{ url_for('login') }}">
+            <label>Benutzername:</label><br>
+            <input name="username" required><br><br>
+
+            <label>Passwort</label><br>
+            <input name="password" type="password" required><br><br>
+
+            <button type="submit" class="auth-button-log">weiter</button>
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock %}
