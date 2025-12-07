@@ -9,13 +9,7 @@ from functools import wraps
 from dateutil.relativedelta import relativedelta
 from functions import (debug_log, load_excel_file, calculate_average_age, calculate_indiv_age, excel_table)
 from functions_login import get_db, email_is_allowed, username_exists, create_user, login_required
-from config import SERVER_START_TIME,  GROUP_PASSWORD, EXCEL_FILE_PATH, SHARED_FOLDER
-
-#SERVER_START_TIME = datetime.now().strftime("%d.%m.%Y")
-GROUP_PASSWORD = 'plauschgruppe'
-SHARED_FOLDER = "/mnt/pc_shared"
-EXCEL_FILE_PATH = os.path.join(SHARED_FOLDER, "PG_2024.xlsx")
-DEBUG_ENABLED = True
+from config import SERVER_START_TIME,  GROUP_PASSWORD, EXCEL_FILE_PATH, SHARED_FOLDER, DEBUG_ENABLED
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'Golf3001'
@@ -40,7 +34,7 @@ def register():
             flash("Email Adresse unbekannt", "error")
             return redirect(url_for('index'))    
         if username_exists(username):
-            flash("Username schon registriert", "error")
+            flash("Benutzername schon registriert", "error")
             return redirect(url_for('index'))
 
         create_user(email, username)
@@ -192,7 +186,7 @@ def special():
 @app.route('/gallery')
 def gallery():
     debug_log("Gallery route accessed")
-    slide_folder = '/mnt/pc_shared/slide_show'
+    slide_folder = '/mnt/pg_web_data/slide_show'
 
     try:
         image_files = [f for f in os.listdir(slide_folder)
@@ -234,7 +228,7 @@ def debug_route():
 def shared_files(filename):
     """Serve files from the SHARED_FOLDER directory."""
     debug_log(f"Attempting to serve shared file: {filename}")
-    return send_from_directory('/mnt/pc_shared/slide_show', filename)
+    return send_from_directory('/mnt/pg_web_data/slide_show', filename)
 
 @app.route('/refresh_data')
 def refresh_data():
