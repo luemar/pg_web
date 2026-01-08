@@ -6,7 +6,7 @@
     .content {
         display: flex;
         flex-wrap: wrap; /* Allows columns to wrap for responsiveness */
-          }
+    }
           
     .column {
         padding: 15px;
@@ -23,7 +23,7 @@
         background: light-gray;
         flex: 1; /* Medium column */
         min-width: 200px;
-        }
+    }
           
     .sidebar img {
         max-width: 100%; /* Ensures the image does not overflow the column */
@@ -32,7 +32,8 @@
         object-fit: cover;
         display: block;  /* Removes any inline spacing issues */
         margin: 0 auto; 
-        } 
+    }
+ 
     .extra img {
         max-width: 100%; /* Ensures the image does not overflow the column */
         height: 400px; 
@@ -40,11 +41,15 @@
         object-fit: cover;
         display: block;  /* Removes any inline spacing issues */
         margin: 0 auto; 
-        }
+    }
+    
+    .text-section {
+        width: 100%;
+        padding: 15px;
+        box-sizing: border-box;
+    }
 
 </style>
-</head>
-<body>
     <main class="content">
         <div class="column sidebar">
           <img src="{{ url_for('static', filename='SouthbroomGC.jpg')}}" alt="Testbild" class="sidebar-image">
@@ -55,10 +60,11 @@
           <img src="{{ url_for('static', filename='Umdoni.jpg') }}" alt="Testbild"class="sidebar-image">
           <figcaption style="color:royalblue; font-family:Arial;">Umdoni Golf Park</figcaption>
         </div>
-    </main>
-    <div>
-         <h3 style="color:royalblue; font-family:Verdana; text-align: center;">
-          Fotos von wunderbaren Golfplätzen in Südafrika an der Southcoast am Indischen Ozean<br>für weiter Informationen auf weisse Links oben klicken
-    </div>
 
+        <div class="text-section">
+             <h3 style="color:royalblue; font-family:Verdana; text-align: center;">
+              Fotos von wunderbaren Golfplätzen in Südafrika an der Southcoast am Indischen Ozean<br>
+              für weiter Informationen auf weisse Links oben klicken</h3>
+        </div>
+    </main>
 {% endblock %}

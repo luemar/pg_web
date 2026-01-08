@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+    <header>
         <meta charset="UTF-8">
-        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <!meta name="viewport" content="initial-scale=1, width=device-width">
         <title>Plauschgruppe</title>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QEKY5N7MNV"></script>
@@ -15,13 +15,16 @@
             </script>  
         </script>
         <style>
+         .topnav::after {
+             content: "";
+             display: block;
+             clear: both;
+         }
          .flash-error {
              color: red;
              font-weight: bold;
              padding: 10px;
-             /*border: 2px solid red;*/
              background: #ffe6e6;
-             /*border-radius: 5px;*/
              margin-bottom: 10px;
              font-size: 1.2em;
          }
@@ -74,7 +77,7 @@
             padding: 12px 14px;
             text-decoration: none;
           }
-          .navbar a:hover {
+          .topnav a:hover {
             background-color: lightblue;
             font-size: 18px;
           }  
@@ -87,7 +90,7 @@
             text-align: center;
           }
 
-          Responsive Design 
+         /* Responsive Design*/ 
           @media (max-width: 768px) {
             .content {
             flex-direction: column; 
@@ -95,7 +98,8 @@
           }  
           
         </style>
-    </head>
+    </header>
+
     <body>
       <header class="header_container">
         <h1 style="color:#08088A; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Plauschgruppe Golfclub Bad Ragaz</h1>
@@ -106,25 +110,12 @@
         <a href="{{ url_for('program') }}">Programm 2025</a>
         <a href="{{ url_for('special') }}">Spezielle Informationen</a>
         <a href="{{ url_for('gallery') }}">Foto Gallerie</a>
-        <a href="{{ url_for('test_1') }}">Test Seite</a>
+        <a href="{{ url_for('test_1') }}">Test Seite 1</a>
       </div>
-
-     {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <div id="flash-container" style="max-width:200px; margin: left 30px; margin top: 12px "> 
-            {% for category, message in messages %}
-                <div class="flash-{{ category }}">
-                {{ message }}
-                </div>
-            {% endfor %}
-            </div>
-        {% endif %}
-     {% endwith %} 
- 
-     {% block content %}
-
-     {% endblock %}
-      </div>
+      
+      {% block content %}
+      {% endblock %}
+     
       <footer>
         &copy; 2024 Marcus Lütolf<br>letztes Update: {{ timestamp }}
       </footer>

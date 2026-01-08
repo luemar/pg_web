@@ -3,16 +3,19 @@ from flask import flash
 from datetime import datetime, timedelta
 from openpyxl import load_workbook
 import pandas as pd
-import os, time, sys, traceback
+import os, time, sys, traceback, re, pwd
 import sqlite3
 from functools import wraps
 from dateutil.relativedelta import relativedelta
 from functions import (debug_log, load_excel_file, calculate_average_age, calculate_indiv_age, excel_table)
-from functions_login import get_db, email_is_allowed, username_exists, create_user, login_required
+from functions_login import get_db, email_is_allowed, username_exists, create_user, login_required, email_already_registered
 from config import SERVER_START_TIME,  GROUP_PASSWORD, EXCEL_FILE_PATH, SHARED_FOLDER, DEBUG_ENABLED
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'Golf3001'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "app.db")
 
 last_file_check = 0
 last_modified_time = 0
@@ -26,21 +29,47 @@ def index():
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
+
     if request.method == "POST":
-        email = request.form["email"]
-        username = request.form["username"]
+        email = request.form.get('email', '').strip()
+        username = request.form.get('username', '').strip()
+
+        print(f"DEBUG: Email entered: {email}")
+        print(f"DEBUG: Username entered: {username}")
     
+        if not username:
+            flash("Benutzername falsch oder fehlend", "error")
+            return redirect(url_for('auth'))
+
         if not email_is_allowed(email):
             flash("Email Adresse unbekannt", "error")
-            return redirect(url_for('index'))    
-        if username_exists(username):
-            flash("Benutzername schon registriert", "error")
-            return redirect(url_for('index'))
+            return redirect(url_for('auth'))
+    
+        email_registered = email_already_registered(email)
+        username_exists_check = username_exists(username)
+        
+        print(f"DEBUG: Email already registered? {email_registered}")
+        print(f"DEBUG: Username exists? {username_exists_check}")
+        
+        if email_registered:        
+            if not username_exists_check:
+                print("DEBUG: Should flash 'falscher Benutzername'")
+                flash("Falscher Benutzername", "error")
+            else:
+                print("DEBUG: Should flash 'Benutzername schon registriert'")
+                flash("Benutzername schon registriert, jetzt einloggen", "error")
+            return redirect(url_for('auth'))
 
-        create_user(email, username)
-        return redirect(url_for('auth'))
+        try:
+            create_user(username, email)
+            flash("Registrierung erfolgreich", "success")    
+            return redirect(url_for('auth'))
+        except Exception as e:
+            print(f"Benutzer kann nicht registriert werden: {e}")
+            flash("Benutzer kann nicht registriert werden", "error")
+            return redirect(url_for('auth'))
 
-    return render_template('register.html')
+    return render_template('auth.html')
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -48,18 +77,26 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        if password != GROUP_PASSWORD:
-            flash("Passwort falsch", "error")
-            return redirect(url_for('index'))
         if not username_exists(username):
             flash("Benutzername unbekannt", "error")
-            return redirect(url_for('index'))
+            return redirect(url_for('auth'))
+
+        if password != GROUP_PASSWORD:
+            flash("Passwort falsch", "error")
+            return redirect(url_for('auth'))
 
         session["logged_in"] = True
         session["username"] = username
-        return render_template('private.html')
-    flash("Zugang abgelehnt", "error")
-    return render_template('index.html')
+        return redirect(url_for('private'))
+    
+    return render_template('auth.html')
+
+@app.route('/private')
+def private():
+    if not session.get("logged_in"):
+        flash("Bitte zuerst einloggen", "error")
+        return redirect(url_for('auth'))
+    return render_template('private.html')
 
 @app.route('/logout')
 def logout():
@@ -70,17 +107,14 @@ def logout():
 def test_1():
     return render_template('test_1.html')
 
-
 @app.route('/members_corner')
 @login_required
 def members_corner():
     return redirect(url_for('auth'))
 
-
 @app.route('/auth')
 def auth():
     return render_template('auth.html')
-
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -186,18 +220,18 @@ def special():
 @app.route('/gallery')
 def gallery():
     debug_log("Gallery route accessed")
-    slide_folder = '/mnt/pg_web_data/slide_show'
+    folder = app.static_folder
+    
+    images = []
+    for f in os.listdir(folder):
+        if f.startswith("Folie") and f.lower().endswith(".jpg"):
+            images.append((f))
 
-    try:
-        image_files = [f for f in os.listdir(slide_folder)
-                       if f.lower().endswith(('.jpg', '.jpeg'))]
-        image_files.sort()
-    except Exception as e:
-        debug_log(f"Error reading slide_show folder: {e}")
-        image_files = []
+     # Sort numerically: Folie1, Folie2, Folie10 (not alphabetically)
+    images.sort(key=lambda x: int(x.replace("Folie", "").replace(".jpg", "")))
 
-    return render_template('gallery.html', images=image_files)
-
+    return render_template('gallery.html', images=images)
+    
 @app.route('/debug')
 def debug_route():
     """A route to test function execution directly"""
@@ -228,7 +262,7 @@ def debug_route():
 def shared_files(filename):
     """Serve files from the SHARED_FOLDER directory."""
     debug_log(f"Attempting to serve shared file: {filename}")
-    return send_from_directory('/mnt/pg_web_data/slide_show', filename)
+    return send_from_directory('/mnt/pg_web_data/slide_show', filename, as_attachment=False)
 
 @app.route('/refresh_data')
 def refresh_data():

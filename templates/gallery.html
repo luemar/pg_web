@@ -1,11 +1,13 @@
-{% extends "layout_private.html" %}
+{% extends "layout_public.html" %}
+
 {% block content %}
 
 <style>
+
 .custom-slideshow {
     width: 950px;
-    height: 600px;
     margin: 40px auto;
+    height: 540px;
     background-color: lightblue;
     border-radius: 10px;
     position: relative;
@@ -21,28 +23,26 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 .slide {
-    display: block;
     position: absolute;
-    width: 95%;
-    height: 90%;
+    inset: 0;
     opacity: 0;
     transition: opacity 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .slide.active {
-    display: block;
     opacity: 1;
     z-index: 2;
 }
 
 .slide img {
-    max-width: 90%;
-    max-height: 85%;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     display: block;
     margin: auto;
@@ -64,7 +64,8 @@
     z-index: 3;
     opacity: 1;
 }
- .custom-slideshow:hover .play-button {
+
+.custom-slideshow:hover .play-button {
     opacity: 1;
 }
 
@@ -74,31 +75,25 @@
     font-style: italic;
     color: #555;
 }
-
 </style>
 
 <div class="custom-slideshow" id="slideshow">
     <div class="slides-wrapper">
-       {% for image in images %}
-       <div class="slide">
-          <img src="{{ url_for('shared_files', filename=image) }}" alt="Slide {{ loop.index }}">
-       </div>
-       {% endfor %}
+        {% for image in images %}
+        <div class="slide {% if loop.first %}active{% endif %}">
+            <img src="{{ url_for('static', filename=image) }}" alt="Slide {{ loop.index }}">
+        </div>
+        {% endfor %}
     </div>
-    <div class="play-button" id="playButton">▶ Start Fotoschau</div>
+    <div class="play-button" id="playButton">&#9654; Start Fotoschau</div>
 </div>
-
-<!--<p class="slideshow-status" id="slideshowStatus">Click the button to start!</p>-->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
     const slides = document.querySelectorAll('.slide');
     const playButton = document.getElementById('playButton');
-    console.log('Slides found:', slides.length);  // Add this debug line
-    console.log('Button found:', playButton);      // Add this debug line
-
-    <!--const statusText = document.getElementById('slideshowStatus'); -->
-    let currentSlide = -1;
+    let currentSlide = 0;
     let intervalId = null;
     let isPlaying = false;
 
@@ -115,31 +110,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function startSlideshow() {
         if (intervalId) clearInterval(intervalId);
-        if (currentSlide === -1) {
-            currentSlide = 0;
-            showSlide(currentSlide);
-        }
-        intervalId = setInterval(nextSlide, 4000); // 4s fixed delay
+        intervalId = setInterval(nextSlide, 4000);
         isPlaying = true;
-        playButton.textContent = '❚❚ Pause Fotoschau';
-        <!--statusText.textContent = 'Slideshow running...';-->
+        playButton.innerHTML = '&#10074;&#10074; Pause Fotoschau';
     }
 
     function pauseSlideshow() {
         clearInterval(intervalId);
         intervalId = null;
         isPlaying = false;
-        playButton.textContent = '▶ Fotoschau wieder starten';
-        <!--statusText.textContent = 'Slideshow paused. Click to resume.';-->
+        playButton.innerHTML = '&#9654; Fotoschau wieder starten';
     }
 
     playButton.addEventListener('click', function(e) {
-        console.log('Button clicked! isPlaying:', isPlaying);
         e.stopPropagation();
         isPlaying ? pauseSlideshow() : startSlideshow();
     });
 
 });
 </script>
-
 {% endblock %}

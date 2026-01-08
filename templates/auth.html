@@ -52,23 +52,33 @@
 .auth-button:hover {
     background-color: #87cefa; /* lighter blue on hover */
 }
-
- 
 </style>
-
 
 <div class="background-section">
    <div class="auth-content">
+   {#
+   {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+            {% for category, message in messages %}
+               <div class="alert alert-{{ category }}" style="padding: 10px; margin: 10px 0; border-radius: 5px; 
+                  {% if category == 'error' %}background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+                  {% else %}background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;{% endif %}">
+                  {{ message }}
+               </div>
+            {% endfor %}
+         {% endif %}
+    {% endwith %}
+    #}
       <div class="form-label-reg">
          <h2>hier, beim ersten Besuch dieser Webseite einmal registrieren</h2>
       </div>
 
       <div>
          <form method="POST" action="{{ url_for('register') }}">
-             <label>email Adresse:</label><br>
+             <label>deine email Adresse:</label><br>
              <input name="email" type="email" required><br><br>
 
-             <label>erstelle einen Benutzername</label><br>
+             <label>bestimme einen Benutzername</label><br>
              <input name="username" required><br><br>
 
              <button type="submit" class="auth-button-reg">weiter</button>
