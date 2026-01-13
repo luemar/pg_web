@@ -37,7 +37,7 @@
     border-radius: 6px;
     cursor: pointer;
 }
-.auth-button:hover {
+.auth-button-reg:hover {
     background-color: #87cefa; /* lighter blue on hover */
 }
 
@@ -49,39 +49,81 @@
     border-radius: 6px;
     cursor: pointer;
 }
-.auth-button:hover {
-    background-color: #87cefa; /* lighter blue on hover */
+.auth-button-log:hover {
+    background-color: #90ee90; /* lighter green on hover */
 }
+
+/* Registration form input styling - VERY SPECIFIC */
+form#registerForm input[type="email"],
+form#registerForm input[name="username"] {
+    background-color: #e6f3ff !important;
+    border: 2px solid #08088A !important;
+    padding: 8px !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    width: 250px !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+form#registerForm input[type="email"]:hover,
+form#registerForm input[name="username"]:hover {
+    background-color: #d6ebff !important;
+    border-color: #08088A !important;
+}
+
+form#registerForm input[type="email"]:focus,
+form#registerForm input[name="username"]:focus {
+    background-color: #cce5ff !important;
+    border-color: #0505c7 !important;
+    outline: none !important;
+}
+
+/* Login form input styling - VERY SPECIFIC */
+form#loginForm input[name="username"],
+form#loginForm input[type="password"] {
+    background-color: #e6ffe6 !important;
+    border: 2px solid green !important;
+    padding: 8px !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    width: 250px !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+form#loginForm input[name="username"]:hover,
+form#loginForm input[type="password"]:hover {
+    background-color: #d6ffd6 !important;
+    border-color: green !important;
+}
+
+form#loginForm input[name="username"]:focus,
+form#loginForm input[type="password"]:focus {
+    background-color: #ccffcc !important;
+    border-color: #006400 !important;
+    outline: none !important;
+}
+
 </style>
 
 <div class="background-section">
    <div class="auth-content">
-   {#
-   {% with messages = get_flashed_messages(with_categories=true) %}
-         {% if messages %}
-            {% for category, message in messages %}
-               <div class="alert alert-{{ category }}" style="padding: 10px; margin: 10px 0; border-radius: 5px; 
-                  {% if category == 'error' %}background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
-                  {% else %}background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;{% endif %}">
-                  {{ message }}
-               </div>
-            {% endfor %}
-         {% endif %}
-    {% endwith %}
-    #}
       <div class="form-label-reg">
          <h2>hier, beim ersten Besuch dieser Webseite einmal registrieren</h2>
       </div>
 
       <div>
-         <form method="POST" action="{{ url_for('register') }}">
+         <form method="POST" action="{{ url_for('register') }}" id="registerForm">
              <label>deine email Adresse:</label><br>
-             <input name="email" type="email" required><br><br>
+             <input id="reg-email" name="email" type="email" required><br><br>
 
              <label>bestimme einen Benutzername</label><br>
-             <input name="username" required><br><br>
-
-             <button type="submit" class="auth-button-reg">weiter</button>
+             <input id="reg-username" name="username" required><br><br>
          </form>
       </div>
 
@@ -92,16 +134,79 @@
       </div>
       
       <div>
-         <form method="POST" action="{{ url_for('login') }}">
+         <form method="POST" action="{{ url_for('login') }}" id="loginForm">
             <label>Benutzername:</label><br>
-            <input name="username" required><br><br>
+            <input id="log-username" name="username" required><br><br>
 
             <label>Passwort</label><br>
-            <input name="password" type="password" required><br><br>
-
-            <button type="submit" class="auth-button-log">weiter</button>
+            <input id="log-password" name="password" type="password" required><br><br>
          </form>
       </div>
    </div>
 </div>
+
+<script>
+// Auto-focus on the first input field when page loads
+window.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('reg-email').focus();
+});
+
+// Set up navigation between fields
+const fields = [
+    document.getElementById('reg-email'),
+    document.getElementById('reg-username'),
+    document.getElementById('log-username'),
+    document.getElementById('log-password')
+];
+
+// Add Enter key navigation for all fields
+fields.forEach((field, index) => {
+    field.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            
+            // If it's the username field in registration form (index 1), submit registration
+            if (index === 1) {
+                document.getElementById('registerForm').submit();
+            }
+            // If it's the password field in login form (index 3), submit login form
+            else if (index === 3) {
+                document.getElementById('loginForm').submit();
+            }
+            // Otherwise move to next field
+            else if (index < fields.length - 1) {
+                fields[index + 1].focus();
+            }
+        }
+    });
+    
+    // Add click event to focus when clicking anywhere in the field area
+    field.addEventListener('click', function() {
+        this.focus();
+    });
+});
+
+// Optional: Add visual indication of which form section is active
+fields.slice(0, 2).forEach(field => {
+    field.addEventListener('focus', function() {
+        document.getElementById('registerForm').style.opacity = '1';
+        document.getElementById('loginForm').style.opacity = '0.6';
+    });
+});
+
+fields.slice(2, 4).forEach(field => {
+    field.addEventListener('focus', function() {
+        document.getElementById('registerForm').style.opacity = '0.6';
+        document.getElementById('loginForm').style.opacity = '1';
+    });
+});
+
+// Reset opacity when clicking outside
+document.querySelector('.background-section').addEventListener('click', function(e) {
+    if (!e.target.closest('form')) {
+        document.getElementById('registerForm').style.opacity = '1';
+        document.getElementById('loginForm').style.opacity = '1';
+    }
+});
+</script>
 {% endblock %}
