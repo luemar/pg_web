@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, make_response, send_from_directory
+from flask import Flask, render_template, request, session, redirect, url_for, make_response, send_from_directory, jsonify
 from flask import flash
 from datetime import datetime, timedelta
 from openpyxl import load_workbook
@@ -8,7 +8,7 @@ import sqlite3
 from functools import wraps
 from dateutil.relativedelta import relativedelta
 from functions import (debug_log, load_excel_file, calculate_average_age, calculate_indiv_age, excel_table)
-from functions_login import get_db, email_is_allowed, username_exists, create_user, login_required, email_already_registered
+from functions_login import get_db, email_is_allowed, username_exists, create_user, login_required, email_already_registered, require_token
 from config import SERVER_START_TIME,  GROUP_PASSWORD, EXCEL_FILE_PATH, SHARED_FOLDER, DEBUG_ENABLED
 
 app = Flask(__name__, template_folder='templates')
@@ -21,6 +21,17 @@ last_file_check = 0
 last_modified_time = 0
 cached_datetime_dict = {}
 cached_string_dict = {}
+
+print(app.url_map)
+
+@app.route('/cam_trigger')
+@require_token
+def cam_trigger():
+    try:
+        response = requests.get('http://192.168.1.159:5000/trigger', timeout=30)
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/')
 def index():
