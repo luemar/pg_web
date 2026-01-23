@@ -5,6 +5,7 @@ from flask import session, redirect, url_for
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = "/var/www/pg_web/app.db"
+CAM_TOKEN = "452710"
 
 def get_db():
     conn = sqlite3.connect(
@@ -64,3 +65,12 @@ def login_required(f):
             return redirect(url_for("auth"))
         return f(*args, **kwargs)
     return wrapper
+
+def require_token(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if token != CAM_TOKEN:
+            return jsonify({"error": "nicht autorisiert"}), 401
+        return f(*args, **kwargs)
+    return decorated
